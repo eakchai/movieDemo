@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+	<title>Movie App</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1"  style="background-color: #cccccc;">
+
+	<link rel="stylesheet" href="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css">
+	<script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+	<script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+	<link rel="stylesheet" href="custom.css">
+</head>
+
+<body>
+
+<div id="grad1">
+
+	 	<div data-role="page" data-theme="b" id="splash" >
+        <div class="splash"></div>
+    </div>
+
+    <div data-role="page" id="movie-list">
+		    <div data-role="header">
+		    <div id="branding"  >
+
+		    <h1>Movies List</h1>
+		    </div><!-- /header -->
+		    </div><!-- /branding -->
+		    <div data-role="content">
+		      <input type="search" name="keyword" id="search" value="" placeholder="search movie here" >
+
+
+					<input type="button" onclick="searchItems($('#search').val())" data-theme="b"  value="Search">
+					<ul data-role="listview" data-inset="true" id="result">
+					</ul>
+	
+		    </div><!-- /content -->
+
+
+
+
+		<script type="text/javascript" src="http://files.main.bloggerstop.net/uploads/3/0/2/5/3025338/snowstorm.js" /></script>
+
+
+		   
+    <!-- /page -->
+		<script type="text/javascript">
+				var globalID;
+				$(function() {
+            console.log('setTimeout');
+            setTimeout(hideSplash, 2000);
+        });
+
+
+        function hideSplash() {
+            $.mobile.changePage("#movie-list", "fade");
+        }
+
+
+				function searchItems(keyword){
+					
+						console.log(keyword);
+						
+						$.getJSON('http://www.omdbapi.com/?s=' + keyword, function(data){
+								 $('#result').empty();
+								 $.each(data["Search"], function(index, element) {
+				            var url = "#movie-detail";
+										var img = element.Poster;
+				            var listitem = '<li data-icon="info" id = "' + element.imdbID +'"><a href="' + url + '" data-transition="slide"><img src="'+ img +'" height="80" width="80"><h1>' + element.Title + '</h1><p>Year ' + element.Year + '</p></a></li>';
+										$('#result').append(listitem);
+				            $('#result').listview('refresh');
+								});
+							}
+						);
+				}
+
+		</script>
+	</div>
+
+    <div data-role="page" id="movie-detail">
+		    <div data-role="header">
+		      <h1>Movie Details</h1>
+		    </div><!-- /header -->
+		    <div data-role="content">
+						<div id="poster"></div>
+						<div id="title"></div>
+
+						<textarea cols="40" rows="8" name="plot" disabled="disabled" id="plot" value=""></textarea>
+						
+						<label for="actor">Actor</label>
+						<textarea cols="40" rows="8" name="actor" disabled="disabled" id="actor" value=""></textarea>
+						
+						<label for="award">Awards</label>
+						<textarea cols="40" rows="8" name="award"  disabled="disabled" id="award" value=""></textarea>
+						
+						<label for="rated">Rated</label>
+						<input type="text" name="rated"  disabled="disabled" id="rated" value="">
+						
+						<label for="imdbRating">rating</label>
+						<input type="text" name="imdbRating"  disabled="disabled" id="imdbRating" value="">
+						
+						<label for="itemid">Runtime</label>
+						<input type="text" name="runtime" disabled="disabled" id="runtime" value="">
+						
+						<label for="desc">Genre</label>
+						<input type="text" name="genre" disabled="disabled" id="genre" value="">
+						
+						<label for="year">Director</label>
+						<input type="text" name="director" disabled="disabled" id="director" value="">
+						
+						<label for="writer">Writer</label>
+						<input type="text" name="writer" disabled="disabled" id="writer" value="">
+
+		    </div><!-- /content -->
+
+
+		  
+
+		    <div data-role="footer"  style="background: #cccccc;" >
+		      <center><p><a href="#movie-list">Back</a></p></center>
+		    </div><!-- /footer -->
+    </div><!-- /page -->
+    </div>
+
+				<script type="text/javascript">
+						$('#result').on('click', 'li', function() {
+							 console.log("clicked "+ this.id); // id of clicked li
+							 globalID = this.id;
+							 console.log("Gobal "+ globalID);
+							 
+					  });
+            $(document).on("pageshow", "#movie-detail", function() {
+                getDetail(globalID);
+            });
+
+            function getDetail(id) {
+							console.log("detail "+id);
+							console.log(window.location.search);
+							$.getJSON('http://www.omdbapi.com/?i=' + id, function(data) {
+										$('#poster').empty();
+										$('#title').empty();
+										$('#runtime').val(data.Runtime).show();
+										$('#genre').val(data.Genre).show();
+										$('#director').val(data.Director).show();
+										$('#writer').val(data.Writer).show();
+										$('#plot').val(data.Plot).show();
+										$('#actor').val(data.Actors).show();
+										$('#rated').val(data.Rated).show();
+										$('#imdbRating').val(data.imdbRating).show();
+										$('#award').val(data.Awards).show();
+										var pos = '<center><img src= "' + data.Poster + '" height="250" width="290"></center>';
+										$('#poster').append(pos);
+										var title = '<center><h4>' + data.Title + '</h4></center>';
+										$('#title').append(title);
+                });
+            }
+
+        </script>
+		<script>
+						//Here you can add your own picture for snow. Just change the url
+						var snowsrc="http://i13.servimg.com/u/f13/11/52/70/02/snowba10.png"
+						//how many snowflakes there will be (currently 12)
+						var no =47;
+						//How fast will the snow disappear (0 is never)
+						var hidesnowtime = 0;
+						//The height the snow will reach before it disappears ("windowheight" or "pageheight")
+						var snowdistance = "pageheight";
+						///////////////////////////////End of Settings///////////////////////////////////
+						var ie4up = (document.all) ? 1 : 0;
+						var ns6up = (document.getElementById&&!document.all) ? 1 : 0;
+						function iecompattest()
+						{
+						return (document.compatMode && document.compatMode!="BackCompat")? document.documentElement : document.body
+						}
+						var dx, xp, yp;
+						var am, stx, sty;
+						var i, doc_width = 800, doc_height = 600;
+						if (ns6up)
+						{
+						doc_width = self.innerWidth;
+						doc_height = self.innerHeight;
+						}
+						else
+						if (ie4up)
+						{
+						doc_width = document.body.clientWidth;
+						doc_height = document.body.clientHeight;
+						}
+						dx = new Array();
+						xp = new Array();
+						yp = new Array();
+						am = new Array();
+						stx = new Array();
+						sty = new Array();
+						for (i = 0; i < no; ++ i)
+						{
+						dx[i] = 0;
+						xp[i] = Math.random()*(doc_width-50);
+						yp[i] = Math.random()*doc_height;
+						am[i] = Math.random()*20;
+						stx[i] = 0.02 + Math.random()/10;
+						sty[i] = 0.7 + Math.random();
+						if (ie4up||ns6up)
+						{
+						if (i == 0)
+						{
+						document.write("<div id=\"dot"+ i +"\" style=\"POSITION: absolute; Z-INDEX: "+ i +"; VISIBILITY: visible; TOP: 15px; LEFT: 15px;\"><a href=\"http://rftactical.darkbb.com/index.htm\"><img src='"+snowsrc+"' border=\"0\"><\/a><\/div>");
+						}
+						else
+						{
+						document.write("<div id=\"dot"+ i +"\" style=\"POSITION: absolute; Z-INDEX: "+ i +"; VISIBILITY: visible; TOP: 15px; LEFT: 15px;\"><img src='"+snowsrc+"' border=\"0\"><\/div>");
+						}
+						}
+						}
+						function snowIE_NS6()
+						{
+						doc_width = ns6up?window.innerWidth-10 : iecompattest().clientWidth-10;
+						doc_height=(window.innerHeight && snowdistance=="windowheight")? window.innerHeight : (ie4up && snowdistance=="windowheight")? iecompattest().clientHeight : (ie4up && !window.opera && snowdistance=="pageheight")? iecompattest().scrollHeight : iecompattest().offsetHeight;
+						for (i = 0; i < no; ++ i)
+						{
+						yp[i] += sty[i];
+						if (yp[i] > doc_height-50)
+						{
+						xp[i] = Math.random()*(doc_width-am[i]-30);
+						yp[i] = 0;
+						stx[i] = 0.02 + Math.random()/10;
+						sty[i] = 0.7 + Math.random();
+						}
+						dx[i] += stx[i];
+						document.getElementById("dot"+i).style.top=yp[i]+"px";
+						document.getElementById("dot"+i).style.left=xp[i] + am[i]*Math.sin(dx[i])+"px";
+						}
+						snowtimer=setTimeout("snowIE_NS6()", 10);
+						}
+						function hidesnow()
+						{
+						if (window.snowtimer) clearTimeout(snowtimer)
+						for (i=0; i<no; i++) document.getElementById("dot"+i).style.visibility="hidden"
+						}
+
+						if (ie4up||ns6up)
+						{
+						snowIE_NS6();
+						if (hidesnowtime>0)
+						setTimeout("hidesnow()", hidesnowtime*1000)
+						}
+		</script>
+
+
+        
+</html>
